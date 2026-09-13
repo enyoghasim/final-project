@@ -10,7 +10,7 @@ import { History } from "./routes/History";
 
 export function App() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#fffaf3]">
       <Navbar />
       <Routes>
         <Route path="/" element={<Landing />} />

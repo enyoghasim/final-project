@@ -11,13 +11,13 @@ const VARIANT_STYLES: Record<
   { chip: string; icon: string; count: string }
 > = {
   matched: {
-    chip: "bg-emerald-50 text-emerald-800 ring-1 ring-inset ring-emerald-200",
-    icon: "bg-emerald-100 text-emerald-700",
+    chip: "bg-emerald-50 text-emerald-800 border-2 border-black",
+    icon: "bg-emerald-300 text-black",
     count: "text-emerald-700",
   },
   missing: {
-    chip: "bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-200",
-    icon: "bg-amber-100 text-amber-700",
+    chip: "bg-amber-50 text-amber-800 border-2 border-black",
+    icon: "bg-amber-300 text-black",
     count: "text-amber-700",
   },
 };

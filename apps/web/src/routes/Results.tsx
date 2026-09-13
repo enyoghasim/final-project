@@ -56,15 +56,15 @@ export function Results() {
   const record = query.data;
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
-      <div className="mb-8 flex items-start justify-between gap-4">
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
             Evaluation results
           </h1>
-          <div className="mt-1.5 flex items-center gap-1.5 text-sm text-slate-500">
-            <FileText className="h-3.5 w-3.5" />
-            {record.resumeFileName}
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-slate-500">
+            <FileText className="h-3.5 w-3.5 shrink-0" />
+            <span className="break-all">{record.resumeFileName}</span>
             <span className="text-slate-300">·</span>
             {formatDate(record.createdAt)}
           </div>
@@ -72,18 +72,18 @@ export function Results() {
       </div>
 
       <div className="animate-fade-in-up space-y-6">
-        <div className="flex flex-col items-center gap-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-soft">
+        <div className="card-brut flex flex-col items-center gap-6 p-6 sm:p-8">
           <ScoreGauge score={record.matchScore} />
         </div>
 
-        <div className="grid gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-soft sm:grid-cols-2 sm:p-8">
+        <div className="card-brut grid gap-6 p-5 sm:grid-cols-2 sm:p-8">
           <SkillList title="Matched Skills" skills={record.matchedSkills} variant="matched" />
           <SkillList title="Missing Skills" skills={record.missingSkills} variant="missing" />
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent-50 text-accent-600">
+        <div className="card-brut p-5 sm:p-8">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-black bg-accent-100 text-black">
               <Lightbulb className="h-3.5 w-3.5" />
             </span>
             Recommendations
@@ -93,10 +93,7 @@ export function Results() {
           </p>
         </div>
 
-        <Link
-          to="/upload"
-          className="group inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition-all hover:bg-accent-hover hover:shadow-card"
-        >
+        <Link to="/upload" className="btn-brut group w-full bg-accent px-5 py-2.5 text-black sm:w-auto">
           Run another evaluation
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </Link>

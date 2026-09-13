@@ -8,13 +8,32 @@ html {
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-[#fffaf3] text-slate-900 antialiased;
 }
 
 ::selection {
-  @apply bg-accent-200 text-slate-900;
+  @apply bg-accent-300 text-slate-900;
 }
 
 :focus-visible {
-  @apply outline-none ring-2 ring-accent-400 ring-offset-2 ring-offset-slate-50;
+  @apply outline-none ring-2 ring-black ring-offset-2 ring-offset-[#fffaf3];
+}
+
+@layer utilities {
+  .btn-brut {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-black text-sm font-bold transition-all;
+    box-shadow: 3px 3px 0 0 #000;
+  }
+  .btn-brut:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 0 #000;
+  }
+  .btn-brut:active:not(:disabled) {
+    transform: translate(0, 0);
+    box-shadow: 1px 1px 0 0 #000;
+  }
+  .card-brut {
+    @apply rounded-2xl border-2 border-black bg-white;
+    box-shadow: 4px 4px 0 0 #000;
+  }
 }

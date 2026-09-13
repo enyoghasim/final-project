@@ -56,9 +56,9 @@ export function Upload() {
       : null);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
           Evaluate your resume
         </h1>
         <p className="mt-1.5 text-sm text-slate-500">
@@ -66,8 +66,8 @@ export function Upload() {
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_260px]">
-        <div className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_260px]">
+        <div className="card-brut space-y-6 p-5 sm:p-8">
           <FileDropzone
             file={file}
             onFileSelected={handleFileSelected}
@@ -98,14 +98,14 @@ export function Upload() {
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Paste the job description here…"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:border-accent-400 focus-visible:ring-2 focus-visible:ring-accent-100"
+              className="w-full rounded-lg border-2 border-black bg-white px-3.5 py-2.5 text-sm text-slate-900 transition-colors placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400"
             />
           </div>
 
           {errorMessage && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg bg-red-50 px-3.5 py-2.5 text-sm text-red-700"
+              className="flex items-start gap-2 rounded-lg border-2 border-red-700 bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-700"
             >
               <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
               {errorMessage}
@@ -113,7 +113,7 @@ export function Upload() {
           )}
 
           {mutation.isPending && (
-            <div className="flex items-center gap-2.5 rounded-lg bg-accent-50 px-3.5 py-2.5 text-sm text-accent-700">
+            <div className="flex items-center gap-2.5 rounded-lg border-2 border-black bg-accent-50 px-3.5 py-2.5 text-sm font-medium text-slate-900">
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               Analyzing your resume against the job description…
             </div>
@@ -123,7 +123,7 @@ export function Upload() {
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition-all hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+            className="btn-brut w-full bg-accent px-4 py-2.5 text-black disabled:cursor-not-allowed disabled:opacity-50"
           >
             {mutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -134,12 +134,12 @@ export function Upload() {
           </button>
         </div>
 
-        <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
-          <h2 className="text-sm font-semibold text-slate-900">Tips for the best result</h2>
+        <aside className="card-brut h-fit p-5">
+          <h2 className="text-sm font-bold text-slate-900">Tips for the best result</h2>
           <ul className="mt-3 space-y-3">
             {TIPS.map((tip) => (
               <li key={tip} className="flex gap-2.5 text-sm leading-relaxed text-slate-600">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-300" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full border border-black bg-accent" />
                 {tip}
               </li>
             ))}

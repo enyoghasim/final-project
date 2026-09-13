@@ -10,19 +10,17 @@ interface AuthCardProps {
 
 export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-slate-50 px-6 py-12">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#fffaf3] px-4 py-12 sm:px-6">
       <div className="w-full max-w-sm animate-fade-in-up">
         <div className="mb-6 flex flex-col items-center text-center">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-accent-600 to-accent-400 text-white shadow-soft">
-            <Sparkles className="h-5 w-5" strokeWidth={2.25} />
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-black bg-accent text-black">
+            <Sparkles className="h-5 w-5" strokeWidth={2.5} />
           </span>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">{title}</h1>
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-slate-900">{title}</h1>
           <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
-          {children}
-        </div>
+        <div className="card-brut p-6">{children}</div>
 
         <p className="mt-6 text-center text-sm text-slate-500">{footer}</p>
       </div>
@@ -50,7 +48,7 @@ export function FormField({
 }
 
 export const inputClass =
-  "w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:border-accent-400 focus-visible:ring-2 focus-visible:ring-accent-100";
+  "w-full rounded-lg border-2 border-black bg-white px-3.5 py-2.5 text-sm text-slate-900 transition-colors placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400";
 
 export const submitButtonClass =
-  "flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60";
+  "btn-brut w-full bg-accent px-4 py-2.5 text-black disabled:cursor-not-allowed disabled:opacity-60";

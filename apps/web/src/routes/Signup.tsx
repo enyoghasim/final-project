@@ -77,7 +77,7 @@ export function Signup() {
         {mutation.isError && (
           <p
             role="alert"
-            className="flex items-start gap-2 rounded-lg bg-red-50 px-3.5 py-2.5 text-sm text-red-700"
+            className="flex items-start gap-2 rounded-lg border-2 border-red-700 bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-700"
           >
             <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
             {mutation.error instanceof ApiError
