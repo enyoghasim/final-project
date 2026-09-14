@@ -11,7 +11,10 @@
 # normal SPA below.
 map $http_user_agent $is_share_crawler {
   default 0;
-  "~*(facebookexternalhit|Twitterbot|Slackbot|Discordbot|WhatsApp|TelegramBot|LinkedInBot|Pinterest|redditbot|Googlebot|Applebot|iMessage|SkypeUriPreview|vkShare|Facebot)" 1;
+  # Non-capturing group: a capturing one here would overwrite $1 from the
+  # location block's own regex (the shareId) the moment this map is
+  # evaluated, silently corrupting the proxied prerender URL below.
+  "~*(?:facebookexternalhit|Twitterbot|Slackbot|Discordbot|WhatsApp|TelegramBot|LinkedInBot|Pinterest|redditbot|Googlebot|Applebot|iMessage|SkypeUriPreview|vkShare|Facebot)" 1;
 }
 
 server {
@@ -20,6 +23,15 @@ server {
   root /usr/share/nginx/html;
   index index.html;
 
+  # proxy_pass below embeds $1 (a variable), which makes nginx resolve
+  # API_INTERNAL_URL's host at request time instead of once at startup —
+  # that requires an explicit resolver. NGINX_LOCAL_RESOLVERS is populated
+  # by the official image's own entrypoint script (enabled via
+  # NGINX_ENTRYPOINT_LOCAL_RESOLVERS in the Dockerfile) from this
+  # container's real /etc/resolv.conf — resolves both other containers on
+  # the same network and public domains.
+  resolver ${NGINX_LOCAL_RESOLVERS} valid=30s;
+
   location = /health {
     default_type text/plain;
     return 200 "ok";
@@ -27,15 +39,21 @@ server {
 
   # The per-evaluation OG image is fetched directly by crawlers/platforms as
   # a plain image URL (not subject to the bot check above), so it's always
-  # proxied through to the API, which renders it on the fly.
+  # proxied through to the API, which renders it on the fly. No Host header
+  # override here — when API_INTERNAL_URL is a public domain behind the same
+  # reverse proxy as this app, the proxy needs the upstream's own Host
+  # (nginx's default) to route correctly, not this app's Host.
   location ~ ^/evaluation/([A-Za-z0-9_-]+)/og-image\.png$ {
     proxy_pass ${API_INTERNAL_URL}/api/public/evaluations/$1/og-image.png;
-    proxy_set_header Host $host;
   }
 
   location ~ ^/evaluation/([A-Za-z0-9_-]+)$ {
+    # nginx's `if` is internally a nested pseudo-location that does NOT
+    # preserve the location regex's $1 once you're inside its body — it
+    # silently reads back empty. Capture it into a real variable first.
+    set $share_id $1;
     if ($is_share_crawler = 1) {
-      proxy_pass ${API_INTERNAL_URL}/api/public/evaluations/$1/prerender;
+      proxy_pass ${API_INTERNAL_URL}/api/public/evaluations/$share_id/prerender;
       break;
     }
     try_files $uri /index.html;

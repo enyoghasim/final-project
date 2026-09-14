@@ -28,4 +28,10 @@ COPY apps/web/nginx.conf.template /etc/nginx/templates/default.conf.template
 # address (or its public URL if the two apps aren't on the same network).
 ENV API_INTERNAL_URL=http://api:4000
 
+# Required for the resolver directive in nginx.conf.template — tells the
+# official image's entrypoint to populate $NGINX_LOCAL_RESOLVERS from this
+# container's own /etc/resolv.conf (nginx needs an explicit resolver
+# whenever proxy_pass contains a variable, which ours does).
+ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
+
 EXPOSE 80
