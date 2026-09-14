@@ -8,7 +8,15 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default("7d"),
   OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY is required"),
   OPENAI_MODEL: z.string().default("gpt-4o-mini"),
-  CORS_ORIGIN: z.string().min(1, "CORS_ORIGIN is required"),
+  CORS_ORIGIN: z
+    .string()
+    .min(1, "CORS_ORIGIN is required")
+    .transform((val) =>
+      val
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter(Boolean)
+    ),
   DISABLE_SIGNUP: z
     .string()
     .default("true")
