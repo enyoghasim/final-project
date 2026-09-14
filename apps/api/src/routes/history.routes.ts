@@ -1,5 +1,6 @@
 import { Router } from "express";
-import type { EvaluationRecord, PaginatedEvaluations } from "@resume-ai/shared";
+import { nanoid } from "nanoid";
+import type { EvaluationRecord, PaginatedEvaluations, ShareStatus } from "@resume-ai/shared";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Evaluation } from "../models/Evaluation.js";
@@ -9,6 +10,7 @@ const router = Router();
 
 function toRecord(doc: {
   _id: unknown;
+  jobTitle: string;
   resumeFileName: string;
   jobDescription: string;
   matchScore: number;
@@ -16,9 +18,13 @@ function toRecord(doc: {
   missingSkills: string[];
   recommendations: string;
   createdAt: Date;
+  isShared: boolean;
+  shareId?: string | null;
+  viewCount: number;
 }): EvaluationRecord {
   return {
     _id: String(doc._id),
+    jobTitle: doc.jobTitle,
     resumeFileName: doc.resumeFileName,
     jobDescription: doc.jobDescription,
     matchScore: doc.matchScore,
@@ -26,6 +32,9 @@ function toRecord(doc: {
     missingSkills: doc.missingSkills,
     recommendations: doc.recommendations,
     createdAt: doc.createdAt.toISOString(),
+    isShared: doc.isShared,
+    shareId: doc.shareId ?? null,
+    viewCount: doc.viewCount,
   };
 }
 
@@ -73,6 +82,64 @@ router.get(
       throw new NotFoundError("Evaluation not found.");
     }
     res.status(200).json(toRecord(evaluation));
+  })
+);
+
+router.post(
+  "/:id/share",
+  asyncHandler(async (req, res) => {
+    if (!req.userId) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const evaluation = await Evaluation.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+    if (!evaluation) {
+      throw new NotFoundError("Evaluation not found.");
+    }
+
+    // Re-enabling a previously revoked share keeps the same link rather than
+    // minting a new one, so any copy already handed out stays valid.
+    if (!evaluation.shareId) {
+      evaluation.shareId = nanoid(12);
+    }
+    evaluation.isShared = true;
+    evaluation.sharedAt = new Date();
+    await evaluation.save();
+
+    const response: ShareStatus = {
+      shareId: evaluation.shareId,
+      isShared: evaluation.isShared,
+      sharePath: `/evaluation/${evaluation.shareId}`,
+    };
+    res.status(200).json(response);
+  })
+);
+
+router.delete(
+  "/:id/share",
+  asyncHandler(async (req, res) => {
+    if (!req.userId) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const evaluation = await Evaluation.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+    if (!evaluation) {
+      throw new NotFoundError("Evaluation not found.");
+    }
+
+    evaluation.isShared = false;
+    await evaluation.save();
+
+    const response: ShareStatus = {
+      shareId: evaluation.shareId ?? "",
+      isShared: false,
+      sharePath: evaluation.shareId ? `/evaluation/${evaluation.shareId}` : "",
+    };
+    res.status(200).json(response);
   })
 );
 

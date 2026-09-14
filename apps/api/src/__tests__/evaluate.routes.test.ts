@@ -3,6 +3,7 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 
 const fakeEvaluationResult = {
+  jobTitle: "TypeScript Engineer",
   matchScore: 82,
   matchedSkills: ["TypeScript", "React"],
   missingSkills: ["Kubernetes"],
@@ -17,11 +18,18 @@ vi.mock("../services/resumeParser.service.js", () => ({
   extractResumeText: vi.fn().mockResolvedValue("Experienced software engineer..."),
 }));
 
+vi.mock("../services/storage.service.js", () => ({
+  uploadResumeFile: vi.fn().mockResolvedValue(undefined),
+}));
+
 const savedDoc = {
   _id: { toString: () => "507f1f77bcf86cd799439011" },
   resumeFileName: "resume.pdf",
   jobDescription: "We need a TypeScript engineer.",
   createdAt: new Date("2024-01-01T00:00:00.000Z"),
+  isShared: false,
+  shareId: null,
+  viewCount: 0,
   ...fakeEvaluationResult,
 };
 

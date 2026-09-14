@@ -1,9 +1,11 @@
 import { env } from "./config/env.js";
 import { createApp } from "./app.js";
 import { connectToDatabase } from "./db/connection.js";
+import { ensureBucket } from "./services/storage.service.js";
 
 async function main() {
   await connectToDatabase();
+  await ensureBucket();
 
   const app = createApp();
   app.listen(env.PORT, () => {

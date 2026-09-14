@@ -4,6 +4,7 @@ import { EvaluationResultSchema, SignupInputSchema } from "./schemas.js";
 describe("EvaluationResultSchema", () => {
   it("accepts a well-formed evaluation result", () => {
     const result = EvaluationResultSchema.safeParse({
+      jobTitle: "Senior Backend Engineer",
       matchScore: 75,
       matchedSkills: ["TypeScript"],
       missingSkills: ["Go"],
@@ -14,6 +15,7 @@ describe("EvaluationResultSchema", () => {
 
   it("rejects a match score above 100", () => {
     const result = EvaluationResultSchema.safeParse({
+      jobTitle: "Senior Backend Engineer",
       matchScore: 150,
       matchedSkills: [],
       missingSkills: [],

@@ -1,7 +1,7 @@
 # Local dev only. On Dokploy, apps/api and apps/web are deployed as separate
 # applications, each built from its own Dockerfile (see the comment at the top
-# of apps/api/Dockerfile and apps/web/Dockerfile) — MongoDB is provisioned there
-# as its own Dokploy database/service, not via this file.
+# of apps/api/Dockerfile and apps/web/Dockerfile) — MongoDB, MinIO, and Redis
+# are provisioned there as their own Dokploy database/services, not via this file.
 services:
   mongo:
     image: mongo:7
@@ -11,5 +11,30 @@ services:
     volumes:
       - mongodata:/data/db
 
+  # S3-compatible storage for uploaded resume files (also used in prod).
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - '9000:9000' # S3 API
+      - '9001:9001' # Web console
+    volumes:
+      - miniodata:/data
+
+  # Backs the public share-link rate limiter and the view-count/OG-image cache.
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redisdata:/data
+
 volumes:
   mongodata:
+  miniodata:
+  redisdata:

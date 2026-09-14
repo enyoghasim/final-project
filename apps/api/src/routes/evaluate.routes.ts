@@ -39,6 +39,7 @@ router.post(
 
     const record: EvaluationRecord = {
       _id: evaluation._id.toString(),
+      jobTitle: evaluation.jobTitle,
       resumeFileName: evaluation.resumeFileName,
       jobDescription: evaluation.jobDescription,
       matchScore: evaluation.matchScore,
@@ -46,6 +47,9 @@ router.post(
       missingSkills: evaluation.missingSkills,
       recommendations: evaluation.recommendations,
       createdAt: evaluation.createdAt.toISOString(),
+      isShared: evaluation.isShared,
+      shareId: evaluation.shareId ?? null,
+      viewCount: evaluation.viewCount,
     };
 
     res.status(201).json(record);

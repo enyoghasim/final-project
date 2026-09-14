@@ -49,6 +49,13 @@ export class OpenAIRequestError extends AppError {
   }
 }
 
+export class StorageError extends AppError {
+  constructor(message = "A storage error occurred. Please try again.", details?: unknown) {
+    super(message, 502);
+    this.cause = details;
+  }
+}
+
 export class UnauthorizedError extends AppError {
   constructor(message = "Unauthorized") {
     super(message, 401);

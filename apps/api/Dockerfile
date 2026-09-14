@@ -15,6 +15,11 @@ RUN pnpm prune --prod
 
 FROM base AS runner
 WORKDIR /app
+# fontconfig + a real font are required for @resvg/resvg-js to render text
+# when generating per-evaluation OG share images — bookworm-slim ships neither.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core \
+  && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system --gid 1001 nodejs \
   && useradd --system --create-home --uid 1001 --gid nodejs api
 COPY --from=builder /app .

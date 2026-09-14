@@ -19,6 +19,13 @@ RUN pnpm --filter @resume-ai/web build
 
 FROM nginx:1.27-alpine AS runner
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
-COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/web/nginx.conf.template /etc/nginx/templates/default.conf.template
+
+# The API's address as reached FROM THIS CONTAINER, used only to proxy the
+# per-evaluation share-link previews (see nginx.conf.template) — not the
+# same as VITE_API_BASE_URL, which is the API's address as reached from the
+# browser. On Dokploy, override this at runtime with the API app's internal
+# address (or its public URL if the two apps aren't on the same network).
+ENV API_INTERNAL_URL=http://api:4000
 
 EXPOSE 80

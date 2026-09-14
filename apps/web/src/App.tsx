@@ -7,6 +7,7 @@ import { Signup } from "./routes/Signup";
 import { Upload } from "./routes/Upload";
 import { Results } from "./routes/Results";
 import { History } from "./routes/History";
+import { SharedEvaluation } from "./routes/SharedEvaluation";
 
 export function App() {
   return (
@@ -14,6 +15,7 @@ export function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/evaluation/:shareId" element={<SharedEvaluation />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
