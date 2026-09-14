@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Download, Eye, FileText, Lightbulb, Loader2, TriangleAlert } from "lucide-react";
+import { Download, Eye, FileText, FileType, Lightbulb, Loader2, TriangleAlert } from "lucide-react";
 import type { PublicEvaluation } from "@resume-ai/shared";
 import { apiRequest, ApiError, API_BASE_URL } from "../lib/apiClient";
 import { ScoreGauge } from "../components/ScoreGauge";
@@ -68,6 +68,7 @@ export function SharedEvaluation() {
 
   const record = query.data;
   const resumeUrl = `${API_BASE_URL}/api/public/evaluations/${shareId}/resume`;
+  const pdfUrl = `${API_BASE_URL}/api/public/evaluations/${shareId}/pdf`;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
@@ -120,15 +121,26 @@ export function SharedEvaluation() {
           </p>
         </div>
 
-        <a
-          href={resumeUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-brut group w-full bg-accent px-5 py-2.5 text-black sm:w-auto"
-        >
-          <Download className="h-4 w-4" />
-          Download resume
-        </a>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <a
+            href={resumeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-brut group bg-accent px-5 py-2.5 text-black"
+          >
+            <Download className="h-4 w-4" />
+            Download resume
+          </a>
+          <a
+            href={pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-brut group bg-white px-5 py-2.5 text-slate-900"
+          >
+            <FileType className="h-4 w-4" />
+            Download as PDF
+          </a>
+        </div>
       </div>
     </div>
   );

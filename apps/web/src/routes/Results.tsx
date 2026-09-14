@@ -7,6 +7,7 @@ import {
   Copy,
   Eye,
   FileText,
+  FileType,
   Lightbulb,
   Link2,
   Link2Off,
@@ -14,7 +15,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import type { EvaluationRecord, ShareStatus } from "@resume-ai/shared";
-import { apiRequest, ApiError } from "../lib/apiClient";
+import { apiRequest, ApiError, downloadAuthedFile } from "../lib/apiClient";
 import { ScoreGauge } from "../components/ScoreGauge";
 import { SkillList } from "../components/SkillList";
 
@@ -226,11 +227,47 @@ export function Results() {
 
         <ShareControl record={record} />
 
-        <Link to="/upload" className="btn-brut group w-full bg-accent px-5 py-2.5 text-black sm:w-auto">
-          Run another evaluation
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-        </Link>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <DownloadPdfButton record={record} />
+          <Link
+            to="/upload"
+            className="btn-brut group justify-center bg-accent px-5 py-2.5 text-black"
+          >
+            Run another evaluation
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function DownloadPdfButton({ record }: { record: EvaluationRecord }) {
+  const mutation = useMutation({
+    mutationFn: () =>
+      downloadAuthedFile(`/api/history/${record._id}/pdf`, `${record.jobTitle}-evaluation.pdf`),
+  });
+
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={mutation.isPending}
+        onClick={() => mutation.mutate()}
+        className="btn-brut w-full justify-center bg-white px-5 py-2.5 text-slate-900 disabled:opacity-50 sm:w-auto"
+      >
+        {mutation.isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <FileType className="h-4 w-4" />
+        )}
+        Download as PDF
+      </button>
+      {mutation.isError && (
+        <p role="alert" className="mt-1.5 text-sm text-red-700">
+          Could not download the PDF. Please try again.
+        </p>
+      )}
     </div>
   );
 }

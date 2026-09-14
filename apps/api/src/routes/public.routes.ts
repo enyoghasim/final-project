@@ -8,6 +8,7 @@ import { Evaluation } from "../models/Evaluation.js";
 import { getResumeDownloadUrl } from "../services/storage.service.js";
 import { redis } from "../services/redis.service.js";
 import { renderEvaluationOgImage } from "../services/ogImage.service.js";
+import { pdfFileName, renderEvaluationPdf } from "../services/pdfReport.service.js";
 import { publicRateLimiter } from "../middleware/rateLimiter.js";
 
 const router = Router();
@@ -83,6 +84,31 @@ router.get(
 
     const url = await getResumeDownloadUrl(evaluation.resumeStorageKey, evaluation.resumeFileName);
     res.redirect(302, url);
+  })
+);
+
+router.get(
+  "/:shareId/pdf",
+  asyncHandler(async (req, res) => {
+    const evaluation = await findShared(req.params.shareId);
+    if (!evaluation) {
+      throw new NotFoundError(NOT_FOUND_MESSAGE);
+    }
+
+    const pdf = await renderEvaluationPdf({
+      jobTitle: evaluation.jobTitle,
+      resumeFileName: evaluation.resumeFileName,
+      jobDescription: evaluation.jobDescription,
+      matchScore: evaluation.matchScore,
+      matchedSkills: evaluation.matchedSkills,
+      missingSkills: evaluation.missingSkills,
+      recommendations: evaluation.recommendations,
+      createdAt: evaluation.createdAt,
+    });
+
+    res.set("Content-Type", "application/pdf");
+    res.set("Content-Disposition", `attachment; filename="${pdfFileName(evaluation.jobTitle)}"`);
+    res.status(200).send(pdf);
   })
 );
 

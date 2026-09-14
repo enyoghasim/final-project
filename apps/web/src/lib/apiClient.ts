@@ -78,3 +78,37 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   return (await response.json()) as T;
 }
+
+// For authenticated binary downloads (e.g. a PDF export) — a plain <a href>
+// can't attach the Authorization header, so this fetches the file with it
+// and saves it via a temporary object URL instead.
+export async function downloadAuthedFile(path: string, filename: string): Promise<void> {
+  const url = new URL(path, API_BASE_URL);
+  const headers: Record<string, string> = {};
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, { headers });
+
+  if (response.status === 401 && token) {
+    onUnauthorized?.();
+    throw new ApiError("Session expired. Please log in again.", 401);
+  }
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({ error: "Request failed." }));
+    throw new ApiError(data.error ?? "Request failed.", response.status);
+  }
+
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectUrl);
+}

@@ -5,6 +5,7 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Evaluation } from "../models/Evaluation.js";
 import { NotFoundError, AppError } from "../utils/errors.js";
+import { pdfFileName, renderEvaluationPdf } from "../services/pdfReport.service.js";
 
 const router = Router();
 
@@ -82,6 +83,37 @@ router.get(
       throw new NotFoundError("Evaluation not found.");
     }
     res.status(200).json(toRecord(evaluation));
+  })
+);
+
+router.get(
+  "/:id/pdf",
+  asyncHandler(async (req, res) => {
+    if (!req.userId) {
+      throw new AppError("Unauthorized", 401);
+    }
+    const evaluation = await Evaluation.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+    if (!evaluation) {
+      throw new NotFoundError("Evaluation not found.");
+    }
+
+    const pdf = await renderEvaluationPdf({
+      jobTitle: evaluation.jobTitle,
+      resumeFileName: evaluation.resumeFileName,
+      jobDescription: evaluation.jobDescription,
+      matchScore: evaluation.matchScore,
+      matchedSkills: evaluation.matchedSkills,
+      missingSkills: evaluation.missingSkills,
+      recommendations: evaluation.recommendations,
+      createdAt: evaluation.createdAt,
+    });
+
+    res.set("Content-Type", "application/pdf");
+    res.set("Content-Disposition", `attachment; filename="${pdfFileName(evaluation.jobTitle)}"`);
+    res.status(200).send(pdf);
   })
 );
 
