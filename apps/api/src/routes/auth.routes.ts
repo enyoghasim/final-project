@@ -1,7 +1,12 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { SignupInputSchema, LoginInputSchema, type AuthResponse } from "@resume-ai/shared";
+import {
+  SignupInputSchema,
+  LoginInputSchema,
+  type AuthConfig,
+  type AuthResponse,
+} from "@resume-ai/shared";
 import { User } from "../models/User.js";
 import { env } from "../config/env.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -16,9 +21,18 @@ function signToken(userId: string): string {
   } as jwt.SignOptions);
 }
 
+router.get("/config", (_req, res) => {
+  const response: AuthConfig = { signupDisabled: env.DISABLE_SIGNUP };
+  res.status(200).json(response);
+});
+
 router.post(
   "/signup",
   asyncHandler(async (req, res) => {
+    if (env.DISABLE_SIGNUP) {
+      throw new AppError("Signups are currently disabled.", 403);
+    }
+
     const input = SignupInputSchema.parse(req.body);
 
     const existing = await User.findOne({ email: input.email.toLowerCase() });

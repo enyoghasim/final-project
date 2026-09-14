@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { LogOut, Menu, Sparkles, X } from "lucide-react";
 import { useAuth } from "../lib/authContext";
+import { useAuthConfig } from "../lib/useAuthConfig";
 
 function navLinkClass({ isActive }: { isActive: boolean }) {
   return [
@@ -28,6 +29,8 @@ function initials(name: string): string {
 
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
+  const { data: authConfig } = useAuthConfig();
+  const signupDisabled = authConfig?.signupDisabled ?? true;
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -88,9 +91,11 @@ export function Navbar() {
               >
                 Log in
               </Link>
-              <Link to="/signup" className="btn-brut bg-accent px-4 py-1.5 text-black">
-                Sign up
-              </Link>
+              {!signupDisabled && (
+                <Link to="/signup" className="btn-brut bg-accent px-4 py-1.5 text-black">
+                  Sign up
+                </Link>
+              )}
             </>
           )}
         </div>
@@ -151,13 +156,15 @@ export function Navbar() {
                 >
                   Log in
                 </Link>
-                <Link
-                  to="/signup"
-                  onClick={() => setMenuOpen(false)}
-                  className="btn-brut mt-2 justify-center bg-accent py-2.5 text-black"
-                >
-                  Sign up
-                </Link>
+                {!signupDisabled && (
+                  <Link
+                    to="/signup"
+                    onClick={() => setMenuOpen(false)}
+                    className="btn-brut mt-2 justify-center bg-accent py-2.5 text-black"
+                  >
+                    Sign up
+                  </Link>
+                )}
               </>
             )}
           </div>

@@ -5,3 +5,4 @@ process.env.JWT_EXPIRES_IN = "7d";
 process.env.OPENAI_API_KEY = "sk-test-key";
 process.env.OPENAI_MODEL = "gpt-4o-mini";
 process.env.CORS_ORIGIN = "http://localhost:5173";
+process.env.DISABLE_SIGNUP = "false";

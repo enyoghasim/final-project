@@ -4,11 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { TriangleAlert, UserPlus } from "lucide-react";
 import { useAuth } from "../lib/authContext";
 import { ApiError } from "../lib/apiClient";
+import { useAuthConfig } from "../lib/useAuthConfig";
 import { AuthCard, FormField, inputClass, submitButtonClass } from "../components/AuthCard";
 
 export function Signup() {
   const navigate = useNavigate();
   const { signup } = useAuth();
+  const { data: authConfig, isLoading: authConfigLoading } = useAuthConfig();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +23,25 @@ export function Signup() {
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     mutation.mutate();
+  }
+
+  if (!authConfigLoading && authConfig?.signupDisabled) {
+    return (
+      <AuthCard
+        title="Signups are closed"
+        subtitle="Self-service signup isn't available right now. Please log in, or ask an admin to create an account for you."
+        footer={
+          <Link to="/login" className="font-medium text-accent hover:text-accent-hover">
+            Go to login
+          </Link>
+        }
+      >
+        <p className="flex items-start gap-2 text-sm text-slate-500">
+          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />
+          New accounts are provisioned by an administrator while public signup is disabled.
+        </p>
+      </AuthCard>
+    );
   }
 
   return (

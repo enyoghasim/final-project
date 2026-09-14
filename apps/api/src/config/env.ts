@@ -9,6 +9,10 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY is required"),
   OPENAI_MODEL: z.string().default("gpt-4o-mini"),
   CORS_ORIGIN: z.string().min(1, "CORS_ORIGIN is required"),
+  DISABLE_SIGNUP: z
+    .string()
+    .default("true")
+    .transform((val) => val.toLowerCase() !== "false"),
 });
 
 function loadEnv() {

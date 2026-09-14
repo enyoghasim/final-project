@@ -19,6 +19,7 @@ vi.mock("bcrypt", () => ({
 }));
 
 const { createApp } = await import("../app.js");
+const { env } = await import("../config/env.js");
 const bcrypt = (await import("bcrypt")).default;
 
 describe("auth routes", () => {
@@ -28,7 +29,32 @@ describe("auth routes", () => {
     vi.clearAllMocks();
   });
 
+  describe("GET /api/auth/config", () => {
+    it("reports whether signup is disabled", async () => {
+      const res = await request(app).get("/api/auth/config");
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({ signupDisabled: false });
+    });
+  });
+
   describe("POST /api/auth/signup", () => {
+    it("returns 403 and never touches the database when signup is disabled", async () => {
+      env.DISABLE_SIGNUP = true;
+      try {
+        const res = await request(app).post("/api/auth/signup").send({
+          fullName: "Ada Lovelace",
+          email: "ada@example.com",
+          password: "password123",
+        });
+
+        expect(res.status).toBe(403);
+        expect(createMock).not.toHaveBeenCalled();
+      } finally {
+        env.DISABLE_SIGNUP = false;
+      }
+    });
+
     it("returns 201 with a token and never leaks the password hash", async () => {
       findOneMock.mockResolvedValue(null);
       createMock.mockResolvedValue({

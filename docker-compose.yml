@@ -1,0 +1,15 @@
+# Local dev only. On Dokploy, apps/api and apps/web are deployed as separate
+# applications, each built from its own Dockerfile (see the comment at the top
+# of apps/api/Dockerfile and apps/web/Dockerfile) — MongoDB is provisioned there
+# as its own Dokploy database/service, not via this file.
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodata:/data/db
+
+volumes:
+  mongodata:

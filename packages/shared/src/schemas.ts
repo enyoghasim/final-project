@@ -34,6 +34,11 @@ export const AuthResponseSchema = z.object({
 });
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 
+export const AuthConfigSchema = z.object({
+  signupDisabled: z.boolean(),
+});
+export type AuthConfig = z.infer<typeof AuthConfigSchema>;
+
 export const EvaluationRecordSchema = EvaluationResultSchema.extend({
   _id: z.string(),
   resumeFileName: z.string(),
